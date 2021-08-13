@@ -3,13 +3,14 @@ import TodoList from './components/TodoList.js'
 
 export const ACTIONS = {
   ADD_TODO: "add-todo",
-  TOGGLE_TODO: "toggle-todo"
+  TOGGLE_TODO: "toggle-todo",
+  DELETE_TODO: "delete-todo"
 }
 
 function reducer(todos, action) {
   switch (action.type) {
     case ACTIONS.ADD_TODO:
-      return [...todos, newTodo(action.payload.id, action.payload.name)]
+      return [...todos, newTodo(action.payload.id, action.payload.name, action.payload.complete)]
     case ACTIONS.TOGGLE_TODO:
       return todos.map(todo => {
         if (todo.id === action.payload.id) {
@@ -17,13 +18,15 @@ function reducer(todos, action) {
         }
         return todo
       })
+    case ACTIONS.DELETE_TODO:
+      return todos.filter(todo => todo.id !== action.payload.id)
     default:
-      return null
+      return todos
   }
 }
 
-function newTodo(id, name) {
-  return { id: id, name: name, complete: false }
+function newTodo(id, name, complete) {
+  return { id: id, name: name, complete: complete }
 }
 
 export default function App() {
@@ -33,7 +36,7 @@ export default function App() {
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem('todos'))
     data && data.forEach(item => {
-      dispatch({ type: ACTIONS.ADD_TODO, payload: { id: item.id, name: item.name} })
+      dispatch({ type: ACTIONS.ADD_TODO, payload: { id: item.id, name: item.name, complete: item.complete} })
     })
   }, [])
 
@@ -43,7 +46,7 @@ export default function App() {
 
   function handleSubmit(e) {
     e.preventDefault()
-    dispatch({ type: ACTIONS.ADD_TODO, payload: { id: Date.now(), name: name } })
+    dispatch({ type: ACTIONS.ADD_TODO, payload: { id: Date.now(), name: name, complete: false } })
     setName('')
   }
 
