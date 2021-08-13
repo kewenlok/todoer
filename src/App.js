@@ -1,16 +1,24 @@
 import React, { useState, useReducer, useEffect } from 'react'
-import TodoList from './components/TodoList'
+import TodoList from './components/TodoList.js'
 
-const ACTIONS = {
-  ADD_TODO: "add-todo"
+export const ACTIONS = {
+  ADD_TODO: "add-todo",
+  TOGGLE_TODO: "toggle-todo"
 }
 
 function reducer(todos, action) {
   switch (action.type) {
     case ACTIONS.ADD_TODO:
       return [...todos, newTodo(action.payload.id, action.payload.name)]
+    case ACTIONS.TOGGLE_TODO:
+      return todos.map(todo => {
+        if (todo.id === action.payload.id) {
+          return { ...todo, complete: !todo.complete }
+        }
+        return todo
+      })
     default:
-      return todos
+      return null
   }
 }
 
@@ -48,7 +56,7 @@ export default function App() {
       </>
 
       <>
-        <TodoList todos={todos} />
+        <TodoList todos={todos} dispatch={dispatch} />
       </>
     </>
   )
